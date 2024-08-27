@@ -1,4 +1,5 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
@@ -33,7 +34,8 @@ export class CdkSecretsStack extends Stack {
 
     // Create a Lambda function that accesses the secret
     const lambdaFunction = new NodejsFunction(this, 'MyLambdaFunction', {
-      entry: join(__dirname, 'lambda', 'index.ts'), // Path to your Lambda function code
+      entry: 'lib/lambda/index.ts', // Path to your Lambda function code
+      runtime: Runtime.NODEJS_LATEST,
       handler: 'handler',
       environment: {
         SECRET_ARN: secret.secretArn,
