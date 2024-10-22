@@ -4,7 +4,6 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
-import { join } from 'path';
 
 export class CdkSecretsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -16,7 +15,6 @@ export class CdkSecretsStack extends Stack {
       generateSecretString: {
         secretStringTemplate: JSON.stringify({
           username: 'user123',
-          apiKey: 'static-api-key-12345',
           databaseName: 'myDatabase',
           connectionString: 'jdbc:mysql://myDatabase:3306/mydb'
         }),
@@ -29,12 +27,11 @@ export class CdkSecretsStack extends Stack {
       parameterName: 'MyParameterName',
       stringValue: 'MySecureParameterValue',
       description: 'A secure parameter for my application',
-      tier: ParameterTier.STANDARD, // Can be STANDARD or ADVANCED
+      tier: ParameterTier.STANDARD,
     });
 
-    // Create a Lambda function that accesses the secret
     const lambdaFunction = new NodejsFunction(this, 'MyLambdaFunction', {
-      entry: 'lib/lambda/index.ts', // Path to your Lambda function code
+      entry: 'lib/lambda/index.ts',
       runtime: Runtime.NODEJS_LATEST,
       handler: 'handler',
       environment: {
@@ -43,7 +40,6 @@ export class CdkSecretsStack extends Stack {
       },
     });
 
-    // Grant the Lambda function permission to read the secret and param
     secret.grantRead(lambdaFunction);
     parameter.grantRead(lambdaFunction);
   }
